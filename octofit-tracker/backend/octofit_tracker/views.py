@@ -27,12 +27,25 @@ class WorkoutViewSet(viewsets.ModelViewSet):
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
 
+import os
 @api_view(['GET'])
 def api_root(request, format=None):
-    return Response({
-        'users': request.build_absolute_uri('users/'),
-        'teams': request.build_absolute_uri('teams/'),
-        'activities': request.build_absolute_uri('activities/'),
-        'leaderboard': request.build_absolute_uri('leaderboard/'),
-        'workouts': request.build_absolute_uri('workouts/'),
-    })
+    codespace_name = os.environ.get('CODESPACE_NAME')
+    if codespace_name:
+        base_url = f"https://{codespace_name}-8000.app.github.dev/api/"
+        return Response({
+            'users': base_url + 'users/',
+            'teams': base_url + 'teams/',
+            'activities': base_url + 'activities/',
+            'leaderboard': base_url + 'leaderboard/',
+            'workouts': base_url + 'workouts/',
+        })
+    else:
+        base_url = request.build_absolute_uri('/')
+        return Response({
+            'users': base_url + 'users/',
+            'teams': base_url + 'teams/',
+            'activities': base_url + 'activities/',
+            'leaderboard': base_url + 'leaderboard/',
+            'workouts': base_url + 'workouts/',
+        })
